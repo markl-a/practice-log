@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>刷題打卡 — Mark Lai</title>
+<style>
+  :root {
+    --accent:#0E7C66; --accent-l:#E6F2EF; --ink:#1a2330; --muted:#5b6878;
+    --border:#dde3ea; --bg:#f7f9fb; --amber:#b45309; --amber-l:#fef3c7;
+    --blue:#1d4ed8; --blue-l:#dbeafe; --red:#b91c1c;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Microsoft JhengHei","Noto Sans TC",sans-serif; color:var(--ink); background:var(--bg); line-height:1.7; }
+  header { background:linear-gradient(135deg,var(--accent),#0a5d4d); color:#fff; padding:1.6rem 1rem 1.3rem; }
+  .wrap { max-width:860px; margin:0 auto; padding:0 0.5rem; }
+  header h1 { font-size:1.35rem; }
+  header p { font-size:0.88rem; opacity:0.9; margin-top:0.2rem; }
+  .stats { display:flex; gap:0.8rem; margin-top:1rem; flex-wrap:wrap; }
+  .stat { background:rgba(255,255,255,0.15); border-radius:10px; padding:0.5rem 1.1rem; text-align:center; }
+  .stat b { display:block; font-size:1.45rem; }
+  .stat span { font-size:0.75rem; opacity:0.9; }
+  main { max-width:860px; margin:0 auto; padding:1.2rem 1rem 4rem; }
+  .rule {
+    background:var(--amber-l); border-left:4px solid var(--amber); border-radius:0 10px 10px 0;
+    padding:0.7rem 1rem; font-size:0.88rem; margin-bottom:1.2rem;
+  }
+  h2 { font-size:1.1rem; color:var(--accent); margin:1.6rem 0 0.7rem; }
+  .day { background:#fff; border:1px solid var(--border); border-radius:12px; padding:0.9rem 1.1rem; margin-bottom:0.8rem; }
+  .day-head { display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap; }
+  .day-date { font-weight:bold; color:var(--accent); }
+  .day-count { font-size:0.8rem; color:var(--muted); }
+  .quota { font-size:0.75rem; border-radius:999px; padding:0.08rem 0.6rem; font-weight:bold; }
+  .quota.ok { background:var(--accent-l); color:var(--accent); }
+  .quota.miss { background:#fee2e2; color:var(--red); }
+  .entry { border-top:1px dashed var(--border); margin-top:0.6rem; padding-top:0.6rem; }
+  .entry-head { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; font-size:0.93rem; }
+  .pf { font-size:0.72rem; border-radius:999px; padding:0.06rem 0.55rem; font-weight:bold; }
+  .pf.leetcode { background:var(--amber-l); color:var(--amber); }
+  .pf.codility { background:var(--blue-l); color:var(--blue); }
+  .pf.hackerrank { background:var(--accent-l); color:var(--accent); }
+  .kind { font-size:0.75rem; font-weight:bold; }
+  .kind.blind { color:var(--accent); }
+  .kind.first { color:var(--muted); }
+  .entry a { color:var(--blue); text-decoration:none; }
+  .entry a:hover { text-decoration:underline; }
+  .min { font-size:0.78rem; color:var(--muted); }
+  details { margin-top:0.3rem; }
+  summary { font-size:0.8rem; color:var(--muted); cursor:pointer; }
+  .notes { font-size:0.84rem; background:var(--bg); border-radius:8px; padding:0.5rem 0.8rem; margin-top:0.3rem; }
+  .commits { font-size:0.82rem; }
+  .commit { display:flex; gap:0.6rem; padding:0.25rem 0; border-bottom:1px dashed var(--border); }
+  .commit .t { color:var(--muted); white-space:nowrap; }
+  .commit a { color:var(--blue); text-decoration:none; }
+  footer { text-align:center; font-size:0.78rem; color:var(--muted); padding:1.5rem 0; }
+  .empty { color:var(--muted); font-size:0.88rem; padding:0.8rem 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>💪 刷題打卡 · Mark Lai</h1>
+    <p id="goal"></p>
+    <div class="stats">
+      <div class="stat"><b id="streak">–</b><span>連續天數 🔥</span></div>
+      <div class="stat"><b id="total-days">–</b><span>累計天數</span></div>
+      <div class="stat"><b id="total-problems">–</b><span>累計題數</span></div>
+      <div class="stat"><b id="blind-count">–</b><span>盲寫通過 ✅</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="rule" id="spotcheck"></div>
+  <h2>📅 每日紀錄</h2>
+  <div id="days"><div class="empty">載入中…</div></div>
+  <h2>🔒 Commit 時間軸（防偽證據，來自 GitHub API）</h2>
+  <div class="commits" id="commits"><div class="empty">載入中…</div></div>
+</main>
+
+<footer>
+  資料來源:repo 內 log.json + GitHub commits API·每次提交都有不可竄改的時間戳<br>
+  <a href="https://github.com/markl-a/practice-log">github.com/markl-a/practice-log</a>
+</footer>
+
+<script>
+const REPO = "markl-a/practice-log";
+const KIND_LABEL = { "首解": ["first","✍️ 首解"], "盲寫": ["blind","✅ 盲寫"], "複習": ["blind","🔁 複習"] };
+
+function daysBetween(a, b) { return Math.round((new Date(b) - new Date(a)) / 86400000); }
+
+async function load() {
+  let data;
+  try {
+    data = await fetch("log.json?t=" + Date.now()).then(r => r.json());
+  } catch (e) {
+    document.getElementById("days").innerHTML = '<div class="empty">log.json 載入失敗</div>';
+    return;
+  }
+  document.getElementById("goal").textContent = data.goal || "";
+  document.getElementById("spotcheck").textContent = "🎯 抽查規則:" + (data.spotcheck || "");
+
+  const days = (data.days || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  // 統計
+  let totalProblems = 0, blind = 0;
+  for (const d of days) for (const e of d.entries || []) {
+    totalProblems++;
+    if (e.kind === "盲寫") blind++;
+  }
+  // streak:從最近一天往回連續
+  let streak = 0;
+  if (days.length) {
+    const today = new Date().toISOString().slice(0, 10);
+    let cursor = (daysBetween(days[0].date, today) <= 1) ? days[0].date : null;
+    for (const d of days) {
+      if (cursor === null) break;
+      if (d.date === cursor) { streak++; cursor = new Date(new Date(d.date) - 86400000).toISOString().slice(0, 10); }
+      else if (d.date < cursor) break;
+    }
+  }
+  document.getElementById("streak").textContent = streak;
+  document.getElementById("total-days").textContent = days.length;
+  document.getElementById("total-problems").textContent = totalProblems;
+  document.getElementById("blind-count").textContent = blind;
+
+  // 每日卡片
+  const dayHtml = days.map(d => {
+    const es = d.entries || [];
+    const lc = es.filter(e => e.platform === "leetcode").length;
+    const co = es.filter(e => e.platform === "codility").length;
+    const hr = es.filter(e => e.platform === "hackerrank").length;
+    const quotaOk = lc >= 2 && co >= 1 && hr >= 1;
+    return `<div class="day">
+      <div class="day-head">
+        <span class="day-date">${d.date}</span>
+        <span class="day-count">LC ${lc}/2 · Codility ${co}/1 · HR ${hr}/1</span>
+        <span class="quota ${quotaOk ? "ok" : "miss"}">${quotaOk ? "✅ 額度達成" : "⚠ 未達額度"}</span>
+      </div>
+      ${es.map(e => {
+        const [cls, label] = KIND_LABEL[e.kind] || ["first", e.kind || ""];
+        return `<div class="entry">
+          <div class="entry-head">
+            <span class="pf ${e.platform}">${e.platform}</span>
+            <span class="kind ${cls}">${label}</span>
+            <a href="${e.url}" target="_blank" rel="noopener">${e.title}</a>
+            <span class="min">${e.min ? e.min + " min" : ""}</span>
+          </div>
+          ${e.notes && e.notes.length ? `<details><summary>三行心法</summary><div class="notes">${e.notes.map(n => "· " + n).join("<br>")}</div></details>` : ""}
+        </div>`;
+      }).join("")}
+    </div>`;
+  }).join("");
+  document.getElementById("days").innerHTML = dayHtml || '<div class="empty">還沒有紀錄</div>';
+
+  // GitHub commits(防偽時間軸)
+  try {
+    const commits = await fetch(`https://api.github.com/repos/${REPO}/commits?per_page=30`).then(r => r.json());
+    if (Array.isArray(commits)) {
+      document.getElementById("commits").innerHTML = commits.map(c => {
+        const t = new Date(c.commit.author.date);
+        const ts = t.getFullYear() + "-" + String(t.getMonth()+1).padStart(2,"0") + "-" + String(t.getDate()).padStart(2,"0")
+                 + " " + String(t.getHours()).padStart(2,"0") + ":" + String(t.getMinutes()).padStart(2,"0");
+        return `<div class="commit"><span class="t">${ts}</span><a href="${c.html_url}" target="_blank" rel="noopener">${c.commit.message.split("\n")[0]}</a></div>`;
+      }).join("");
+    }
+  } catch (e) {
+    document.getElementById("commits").innerHTML = '<div class="empty">GitHub API 暫時無法載入(rate limit),稍後重整</div>';
+  }
+}
+load();
+</script>
+</body>
+</html>

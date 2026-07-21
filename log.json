@@ -1,0 +1,24 @@
+{
+  "owner": "賴祺清 Mark Lai",
+  "goal": "每日:LeetCode 背 2 題(隔日盲寫) + Codility 1 題 + HackerRank 1 題",
+  "spotcheck": "前同事每週隨機挑一題已標✅盲寫的題,視訊 15 分鐘現場盲寫驗證",
+  "days": [
+    {
+      "date": "2026-07-22",
+      "entries": [
+        {
+          "platform": "leetcode",
+          "title": "【範例,請替換】206. Reverse Linked List",
+          "kind": "首解",
+          "min": 18,
+          "url": "https://leetcode.com/submissions/detail/xxxxx/",
+          "notes": [
+            "核心不變量:每步維護 prev/curr 兩指標,斷開前先存 next",
+            "複雜度:O(n) / O(1)",
+            "我會錯的點:while 條件寫成 curr.next 會漏最後一個節點"
+          ]
+        }
+      ]
+    }
+  ]
+}
