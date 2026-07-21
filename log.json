@@ -15,7 +15,45 @@
           "不變量:走到 i 時 hash 存「前面所有數→index」,查 target-nums[i]",
           "複雜度:O(n) / O(n)",
           "易錯:先查再存,不然同一元素會被用兩次"
-        ]
+        ],
+        "solution": {
+          "idea": [
+            "演進講法(面試加分):暴力雙迴圈 O(n^2) → 兩趟 hash(先建表再查,要處理自己配自己) → 一趟 hash(邊走邊存,天然避開自配)",
+            "咒語:邊走邊存 hash,查「target - 當前值」在不在 —— 先查再存",
+            "複雜度:O(n) 時間 / O(n) 空間"
+          ],
+          "python": [
+            "class Solution:",
+            "    def twoSum(self, nums: List[int], target: int) -> List[int]:",
+            "        seen = {}                          # 值 -> index",
+            "        for i, x in enumerate(nums):",
+            "            if target - x in seen:         # 先查",
+            "                return [seen[target - x], i]",
+            "            seen[x] = i                    # 再存",
+            "        return []"
+          ],
+          "cpp": [
+            "class Solution {",
+            "public:",
+            "    vector<int> twoSum(vector<int>& nums, int target) {",
+            "        unordered_map<int, int> seen;              // 值 -> index",
+            "        seen.reserve(nums.size());                 // 預留空間,避免 rehash(優化點)",
+            "        for (int i = 0; i < nums.size(); i++) {",
+            "            auto it = seen.find(target - nums[i]); // 先查",
+            "            if (it != seen.end())",
+            "                return {it->second, i};",
+            "            seen[nums[i]] = i;                     // 再存",
+            "        }",
+            "        return {};",
+            "    }",
+            "};"
+          ],
+          "extra": [
+            "C++ 記憶點:unordered_map(非 map,不用排序)、find+end() 比 count 少查一次、reserve 防擴容 rehash",
+            "不用背 sync_with_stdio —— 那是 competitive 讀 stdin 用的,放在 LeetCode 成員函式裡沒有作用",
+            "兩趟 hash 版的坑:查 complement 時要排除自己(numMap[complement] != i) —— 一趟版天然沒這問題,這是它更優的原因"
+          ]
+        }
       },
       {
         "platform": "leetcode",

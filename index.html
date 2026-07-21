@@ -48,6 +48,13 @@
   details { margin-top:0.3rem; }
   summary { font-size:0.8rem; color:var(--muted); cursor:pointer; }
   .notes { font-size:0.84rem; background:var(--bg); border-radius:8px; padding:0.5rem 0.8rem; margin-top:0.3rem; }
+  .sol { margin-top:0.3rem; }
+  .sol h4 { font-size:0.82rem; color:var(--accent); margin:0.5rem 0 0.2rem; }
+  .sol pre {
+    background:#0f172a; color:#e2e8f0; border-radius:8px; padding:0.6rem 0.9rem;
+    overflow-x:auto; font-family:Consolas,monospace; font-size:0.8rem; line-height:1.5;
+  }
+  .sol .idea { font-size:0.84rem; background:var(--accent-l); border-radius:8px; padding:0.5rem 0.8rem; }
   .commits { font-size:0.82rem; }
   .commit { display:flex; gap:0.6rem; padding:0.25rem 0; border-bottom:1px dashed var(--border); }
   .commit .t { color:var(--muted); white-space:nowrap; }
@@ -125,6 +132,12 @@ async function load() {
               <span class="min">目標 ${it.target_min} min</span>
             </div>
             ${it.hints && it.hints.length ? `<details><summary>三行心法（解前先想，解完默寫）</summary><div class="notes">${it.hints.map(n => "· " + n).join("<br>")}</div></details>` : ""}
+            ${it.solution ? `<details class="sol"><summary>📖 題解（思路 + Python + C++）</summary>
+              ${it.solution.idea ? `<div class="idea">${it.solution.idea.map(n => "· " + n).join("<br>")}</div>` : ""}
+              ${it.solution.python ? `<h4>Python</h4><pre>${it.solution.python.join("\n").replace(/</g,"&lt;")}</pre>` : ""}
+              ${it.solution.cpp ? `<h4>C++</h4><pre>${it.solution.cpp.join("\n").replace(/</g,"&lt;")}</pre>` : ""}
+              ${it.solution.extra ? `<div class="notes">${it.solution.extra.map(n => "· " + n).join("<br>")}</div>` : ""}
+            </details>` : ""}
           </div>`;
         }).join("")}
       </div>`;
