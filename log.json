@@ -64,7 +64,42 @@
           "不變量:記住前面出現過的最低價,答案=max(答案,今價-最低價)",
           "複雜度:O(n) / O(1)",
           "易錯:先更新利潤再更新最低價,順序反了=當天買當天賣"
-        ]
+        ],
+        "solution": {
+          "idea": [
+            "演進①暴力:枚舉所有(買日,賣日)配對,O(n^2) —— 先講它證明理解問題",
+            "演進②觀察:內層其實在重複找「賣出日之前的最低價」→ 前綴最低價陣列預算,O(n) 時間+O(n) 空間",
+            "演進③壓縮:前綴只用到最新值 → 一個變數滾動維護,O(n)/O(1) 最優",
+            "咒語:一路記最低價,每天問「今天賣賺多少」—— 先算利潤、再更新低點",
+            "通用套路:發現重複計算 → 預計算 → 壓縮狀態(DP 降維都是這招)"
+          ],
+          "python": [
+            "class Solution:",
+            "    def maxProfit(self, prices: List[int]) -> int:",
+            "        low, best = float('inf'), 0",
+            "        for p in prices:",
+            "            best = max(best, p - low)   # 先結算:今天賣賺多少",
+            "            low = min(low, p)           # 再更新:目前最低價",
+            "        return best"
+          ],
+          "cpp": [
+            "class Solution {",
+            "public:",
+            "    int maxProfit(vector<int>& prices) {",
+            "        int low = INT_MAX, best = 0;",
+            "        for (int p : prices) {",
+            "            best = max(best, p - low);  // 先結算",
+            "            low = min(low, p);          // 再更新低點",
+            "        }",
+            "        return best;",
+            "    }",
+            "};"
+          ],
+          "extra": [
+            "C++ 記憶點:INT_MAX(在 <climits>)、range-for 比索引乾淨",
+            "面試一句話:「O(n^2) → 前綴陣列 O(n)+O(n) → 滾動變數 O(n)+O(1)」"
+          ]
+        }
       },
       {
         "platform": "codility",
