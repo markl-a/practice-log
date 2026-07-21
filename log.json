@@ -2,23 +2,55 @@
   "owner": "賴祺清 Mark Lai",
   "goal": "每日:LeetCode 背 2 題(隔日盲寫) + Codility 1 題 + HackerRank 1 題",
   "spotcheck": "前同事每週隨機挑一題已標✅盲寫的題,視訊 15 分鐘現場盲寫驗證",
-  "days": [
-    {
-      "date": "2026-07-22",
-      "entries": [
-        {
-          "platform": "leetcode",
-          "title": "【範例,請替換】206. Reverse Linked List",
-          "kind": "首解",
-          "min": 18,
-          "url": "https://leetcode.com/submissions/detail/xxxxx/",
-          "notes": [
-            "核心不變量:每步維護 prev/curr 兩指標,斷開前先存 next",
-            "複雜度:O(n) / O(1)",
-            "我會錯的點:while 條件寫成 curr.next 會漏最後一個節點"
-          ]
-        }
-      ]
-    }
-  ]
+  "plan": {
+    "date": "2026-07-22",
+    "note": "招式主題:hash 查表 / 一次遍歷維護極值 / XOR 抵銷 / 狀態追蹤。盲寫排 7/23(三)晚,行動貝果前測熱身。",
+    "items": [
+      {
+        "platform": "leetcode",
+        "title": "1. Two Sum",
+        "url": "https://leetcode.com/problems/two-sum/",
+        "target_min": 10,
+        "hints": [
+          "不變量:走到 i 時 hash 存「前面所有數→index」,查 target-nums[i]",
+          "複雜度:O(n) / O(n)",
+          "易錯:先查再存,不然同一元素會被用兩次"
+        ]
+      },
+      {
+        "platform": "leetcode",
+        "title": "121. Best Time to Buy and Sell Stock",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+        "target_min": 10,
+        "hints": [
+          "不變量:記住前面出現過的最低價,答案=max(答案,今價-最低價)",
+          "複雜度:O(n) / O(1)",
+          "易錯:先更新利潤再更新最低價,順序反了=當天買當天賣"
+        ]
+      },
+      {
+        "platform": "codility",
+        "title": "Lesson 2: OddOccurrencesInArray",
+        "url": "https://app.codility.com/programmers/lessons/2-arrays/odd_occurrences_in_array/",
+        "target_min": 8,
+        "hints": [
+          "不變量:acc ^= x 掃到底,成對抵銷,acc 即答案",
+          "複雜度:O(n) / O(1)",
+          "記得拿成績證書連結貼紀錄"
+        ]
+      },
+      {
+        "platform": "hackerrank",
+        "title": "Counting Valleys",
+        "url": "https://www.hackerrank.com/challenges/counting-valleys/problem",
+        "target_min": 10,
+        "hints": [
+          "不變量:level 加減 1;山谷=「回到 0 的那一步是 U」",
+          "複雜度:O(n) / O(1)",
+          "易錯:不是每次低於 0 都算,是回到 0 才數"
+        ]
+      }
+    ]
+  },
+  "days": []
 }

@@ -73,6 +73,7 @@
 
 <main>
   <div class="rule" id="spotcheck"></div>
+  <div id="plan"></div>
   <h2>📅 每日紀錄</h2>
   <div id="days"><div class="empty">載入中…</div></div>
   <h2>🔒 Commit 時間軸（防偽證據，來自 GitHub API）</h2>
@@ -100,6 +101,30 @@ async function load() {
   }
   document.getElementById("goal").textContent = data.goal || "";
   document.getElementById("spotcheck").textContent = "🎯 抽查規則:" + (data.spotcheck || "");
+
+  // 今日指定題
+  if (data.plan && data.plan.items && data.plan.items.length) {
+    const p = data.plan;
+    const solvedTitles = new Set();
+    for (const d of (data.days || [])) for (const e of d.entries || []) solvedTitles.add(e.title);
+    document.getElementById("plan").innerHTML = `
+      <h2>📌 指定題（${p.date}）</h2>
+      <div class="day">
+        ${p.note ? `<div class="day-count" style="margin-bottom:0.3rem">${p.note}</div>` : ""}
+        ${p.items.map(it => {
+          const done = [...solvedTitles].some(t => t.includes(it.title.split(" ")[0].replace(".","")) || t === it.title);
+          return `<div class="entry">
+            <div class="entry-head">
+              <span>${done ? "✅" : "⬜"}</span>
+              <span class="pf ${it.platform}">${it.platform}</span>
+              <a href="${it.url}" target="_blank" rel="noopener">${it.title}</a>
+              <span class="min">目標 ${it.target_min} min</span>
+            </div>
+            ${it.hints && it.hints.length ? `<details><summary>三行心法（解前先想，解完默寫）</summary><div class="notes">${it.hints.map(n => "· " + n).join("<br>")}</div></details>` : ""}
+          </div>`;
+        }).join("")}
+      </div>`;
+  }
 
   const days = (data.days || []).slice().sort((a, b) => b.date.localeCompare(a.date));
   // 統計
