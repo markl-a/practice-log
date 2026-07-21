@@ -30,13 +30,13 @@
       },
       {
         "platform": "codility",
-        "title": "Lesson 2: OddOccurrencesInArray",
-        "url": "https://app.codility.com/programmers/lessons/2-arrays/odd_occurrences_in_array/",
+        "title": "Lesson 1: BinaryGap",
+        "url": "https://app.codility.com/programmers/lessons/1-iterations/binary_gap/",
         "target_min": 8,
         "hints": [
-          "不變量:acc ^= x 掃到底,成對抵銷,acc 即答案",
-          "複雜度:O(n) / O(1)",
-          "記得拿成績證書連結貼紀錄"
+          "不變量:掃 bin(N),遇 1 →結算目前 gap 取 max 並歸零;遇 0 →計數+1",
+          "複雜度:O(log N) / O(1)",
+          "易錯:尾端的 0 串不算 gap(右邊沒有 1 封住);記得拿成績證書連結"
         ]
       },
       {
