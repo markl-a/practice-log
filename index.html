@@ -154,18 +154,22 @@ async function load() {
   document.getElementById("days").innerHTML = dayHtml || '<div class="empty">還沒有紀錄</div>';
 
   // GitHub commits(防偽時間軸)
+  const fallback = `<div class="empty">GitHub API 匿名額度暫時用盡 —
+    <a href="https://github.com/${REPO}/commits/main" target="_blank" rel="noopener">直接到 GitHub 看 commit 時間軸 →</a></div>`;
   try {
     const commits = await fetch(`https://api.github.com/repos/${REPO}/commits?per_page=30`).then(r => r.json());
-    if (Array.isArray(commits)) {
+    if (Array.isArray(commits) && commits.length) {
       document.getElementById("commits").innerHTML = commits.map(c => {
         const t = new Date(c.commit.author.date);
         const ts = t.getFullYear() + "-" + String(t.getMonth()+1).padStart(2,"0") + "-" + String(t.getDate()).padStart(2,"0")
                  + " " + String(t.getHours()).padStart(2,"0") + ":" + String(t.getMinutes()).padStart(2,"0");
         return `<div class="commit"><span class="t">${ts}</span><a href="${c.html_url}" target="_blank" rel="noopener">${c.commit.message.split("\n")[0]}</a></div>`;
       }).join("");
+    } else {
+      document.getElementById("commits").innerHTML = fallback;
     }
   } catch (e) {
-    document.getElementById("commits").innerHTML = '<div class="empty">GitHub API 暫時無法載入(rate limit),稍後重整</div>';
+    document.getElementById("commits").innerHTML = fallback;
   }
 }
 load();
