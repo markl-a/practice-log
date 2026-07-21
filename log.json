@@ -110,7 +110,50 @@
           "不變量:掃 bin(N),遇 1 →結算目前 gap 取 max 並歸零;遇 0 →計數+1",
           "複雜度:O(log N) / O(1)",
           "易錯:尾端的 0 串不算 gap(右邊沒有 1 封住);記得拿成績證書連結"
-        ]
+        ],
+        "solution": {
+          "idea": [
+            "演進①字串版:bin(N) 轉字串掃一遍 —— 遇 1 結算目前 gap 取 max 並歸零;遇 0 且已見過 1 才累加",
+            "演進②位運算版(加分):不轉字串,N&1 看最低位、N>>=1 右移 —— 同一套邏輯,C++ 面試官更愛",
+            "邊界靠兩個機制自動處理:started 旗標擋「開頭的 0」;「只在遇 1 時結算」擋「尾端沒被封住的 0」",
+            "咒語:遇 1 結算歸零、遇 0 累加 —— 沒被 1 夾住的不算",
+            "複雜度:O(log N) / O(1)"
+          ],
+          "python": [
+            "def solution(N):",
+            "    best = gap = 0",
+            "    started = False              # 是否遇過第一個 1",
+            "    for b in bin(N)[2:]:",
+            "        if b == '1':",
+            "            best = max(best, gap)  # 遇 1 才結算 → 尾端 0 永遠不會被算",
+            "            gap = 0",
+            "            started = True",
+            "        elif started:              # 開頭的 0 不算",
+            "            gap += 1",
+            "    return best"
+          ],
+          "cpp": [
+            "int solution(int N) {",
+            "    int best = 0, gap = 0;",
+            "    bool started = false;",
+            "    while (N > 0) {",
+            "        if (N & 1) {                 // 看最低位",
+            "            best = max(best, gap);",
+            "            gap = 0;",
+            "            started = true;",
+            "        } else if (started) {",
+            "            gap++;",
+            "        }",
+            "        N >>= 1;                     // 右移一位",
+            "    }",
+            "    return best;",
+            "}"
+          ],
+          "extra": [
+            "Python 花式版(理解就好不用背):max((len(s) for s in bin(N)[2:].strip('0').split('1')), default=0)",
+            "C++ 位運算三件套:N&1 取最低位、N>>=1 右移、迴圈條件 N>0"
+          ]
+        }
       },
       {
         "platform": "hackerrank",
@@ -121,7 +164,38 @@
           "不變量:level 加減 1;山谷=「回到 0 的那一步是 U」",
           "複雜度:O(n) / O(1)",
           "易錯:不是每次低於 0 都算,是回到 0 才數"
-        ]
+        ],
+        "solution": {
+          "idea": [
+            "這題沒有演進,一步到位:海拔模擬 —— U 就 +1、D 就 -1",
+            "山谷的定義:從海平面以下「用 U 踩回 0」的那一步,數一次",
+            "咒語:維護海拔;U 踩回 0 = 完成一個山谷",
+            "複雜度:O(n) / O(1)"
+          ],
+          "python": [
+            "def countingValleys(steps, path):",
+            "    level = valleys = 0",
+            "    for c in path:",
+            "        level += 1 if c == 'U' else -1",
+            "        if c == 'U' and level == 0:   # 上坡踩回海平面",
+            "            valleys += 1",
+            "    return valleys"
+          ],
+          "cpp": [
+            "int countingValleys(int steps, string path) {",
+            "    int level = 0, valleys = 0;",
+            "    for (char c : path) {",
+            "        level += (c == 'U') ? 1 : -1;",
+            "        if (c == 'U' && level == 0) valleys++;",
+            "    }",
+            "    return valleys;",
+            "}"
+          ],
+          "extra": [
+            "易錯:不是「每次低於 0」都算,是「回到 0 的那步是 U」才算 —— 山谷可以在水下起伏很多次,只數浮出那一下",
+            "同型題:括號深度、庫存水位 —— 都是「狀態累加+特定穿越事件計數」"
+          ]
+        }
       }
     ]
   },
