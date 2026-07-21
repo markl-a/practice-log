@@ -100,7 +100,11 @@ async function load() {
     return;
   }
   document.getElementById("goal").textContent = data.goal || "";
-  document.getElementById("spotcheck").textContent = "🎯 抽查規則:" + (data.spotcheck || "");
+  if (data.spotcheck) {
+    document.getElementById("spotcheck").textContent = "🎯 抽查規則:" + data.spotcheck;
+  } else {
+    document.getElementById("spotcheck").style.display = "none";
+  }
 
   // 今日指定題
   if (data.plan && data.plan.items && data.plan.items.length) {

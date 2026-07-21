@@ -1,7 +1,7 @@
 {
   "owner": "賴祺清 Mark Lai",
   "goal": "每日:LeetCode 背 2 題(隔日盲寫) + Codility 1 題 + HackerRank 1 題",
-  "spotcheck": "前同事每週隨機挑一題已標✅盲寫的題,視訊 15 分鐘現場盲寫驗證",
+  "spotcheck": "",
   "plan": {
     "date": "2026-07-22",
     "note": "招式主題:hash 查表 / 一次遍歷維護極值 / XOR 抵銷 / 狀態追蹤。盲寫排 7/23(三)晚,行動貝果前測熱身。",
